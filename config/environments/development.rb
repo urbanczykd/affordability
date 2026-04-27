@@ -8,9 +8,6 @@ Rails.application.configure do
   config.consider_all_requests_local = true
   config.server_timing = true
 
-  # Active Storage
-  config.active_storage.service = :local
-
   # Logging
   config.log_level = :debug
   config.log_tags = [:request_id]
