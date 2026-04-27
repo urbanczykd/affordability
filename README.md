@@ -17,7 +17,7 @@ A production-ready Rails 7.2 API service that evaluates mortgage applications ag
 
 ```bash
 # 1. Clone the repository and install dependencies
-git clone <repo-url>
+git clone https://github.com/urbanczykd/affordability
 cd affordability
 bundle install
 

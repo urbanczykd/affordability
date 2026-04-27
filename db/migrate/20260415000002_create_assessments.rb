@@ -14,7 +14,6 @@ class CreateAssessments < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :assessments, :mortgage_application_id
     add_index :assessments, :status
   end
 end
