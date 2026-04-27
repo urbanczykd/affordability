@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: affordability
+      POSTGRES_PASSWORD: affordability_password
+      POSTGRES_DB: affordability_development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U affordability"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      target: production
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://affordability:affordability_password@postgres:5432/affordability_development
+      REDIS_URL: redis://redis:6379/0
+      API_KEY: ${API_KEY:-dev-secret-key-change-in-production}
+      RAILS_LOG_TO_STDOUT: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    command: >
+      sh -c "bundle exec rails db:create db:migrate &&
+             bundle exec puma -C config/puma.rb"
+
+  sidekiq:
+    build:
+      context: .
+      target: production
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://affordability:affordability_password@postgres:5432/affordability_development
+      REDIS_URL: redis://redis:6379/0
+      API_KEY: ${API_KEY:-dev-secret-key-change-in-production}
+      RAILS_LOG_TO_STDOUT: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    command: bundle exec sidekiq -q default -c 5
+
+volumes:
+  postgres_data:
+  redis_data:
