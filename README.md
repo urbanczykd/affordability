@@ -4,18 +4,6 @@ A production-ready Rails 7.2 API service that evaluates mortgage applications ag
 
 ---
 
-## Table of Contents
-
-1. [Setup & Running](#setup--running)
-2. [API Reference](#api-reference)
-3. [Design Decisions](#design-decisions)
-4. [System Evolution](#system-evolution)
-5. [Operational Considerations](#operational-considerations)
-6. [Change & Flexibility](#change--flexibility)
-7. [Trade-offs & Prioritization](#trade-offs--prioritization)
-
----
-
 ## Setup & Running
 
 ### Prerequisites
@@ -337,25 +325,3 @@ This pattern also enables A/B testing different lending criteria, time-limited p
 ### Versioned API
 
 The namespace `Api::V1` anticipates future versions. When the assessment response shape needs to change (e.g., adding more granular decline reasons or a risk score), a `V2::AssessmentsController` can inherit from `V1` and override only the serializer, leaving V1 clients unaffected until they migrate.
-
----
-
-## Trade-offs & Prioritization
-
-**Polling vs. webhooks.** Polling is implemented because it is self-contained: the client needs no public endpoint to receive callbacks, and there is no delivery guarantee problem to solve. The cost is that clients make repeated requests that return no new data while jobs are in flight. For a production system with many concurrent clients, webhooks or a WebSocket-based push mechanism are more efficient and should be introduced once the polling-based contract is validated in production.
-
-**Inline job execution in tests.** The test environment uses `config.active_job.queue_adapter = :test`, which does not execute jobs inline but allows `have_enqueued_job` matchers. This tests the contract (job is enqueued) without coupling request specs to the calculator's output. Service-level tests for the calculator itself cover all calculation scenarios exhaustively and run faster without ActiveRecord.
-
-**No pagination.** The current `show` endpoints return single records. If `has_many :assessments` grows large per application in the future, listing endpoints with cursor-based pagination should be added. The current design does not expose a list endpoint for assessments, which avoids premature optimization.
-
-**Decimal precision.** All monetary and ratio fields use `decimal` with explicit `precision` and `scale` to avoid floating-point representation errors in the database. The calculator itself operates with Ruby `Float` for performance, which is sufficient given the precision stored. If regulatory requirements demand higher precision, replacing `Float` arithmetic with `BigDecimal` in the service is a localised change.
-
-**Single queue.** All Sidekiq jobs run on the `default` queue. Separate queues for different priority tiers (e.g., `critical` for re-assessments triggered by rate changes vs `default` for new applications) would allow independent scaling and prioritization. This is a configuration-only change when needed.
-
-
-**Notes
-1. Async assessment processing — POST .../assessments returns 202 immediately with status: "pending", a Sidekiq job does the work, client polls until            
-  completed/failed. This isolates calculation complexity from the request cycle.
-2. AffordabilityCalculator service object — no business logic in controllers or callbacks. Returns a typed Result struct. Independently testable, and the seam   
-  for future externalised lending policies.
-3. UUID primary keys — pgcrypto extension, prevents ID enumeration, safe to expose in URLs.
