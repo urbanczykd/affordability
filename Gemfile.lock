@@ -80,7 +80,7 @@ GEM
     builder (3.3.0)
     cgi (0.5.1)
     concurrent-ruby (1.3.6)
-    connection_pool (3.0.2)
+    connection_pool (2.5.5)
     crass (1.0.6)
     database_cleaner-active_record (2.2.2)
       activerecord (>= 5.a)
@@ -254,6 +254,7 @@ PLATFORMS
   arm64-darwin-25
 
 DEPENDENCIES
+  connection_pool (< 3.0)
   database_cleaner-active_record (~> 2.1)
   dotenv-rails (~> 3.1)
   factory_bot_rails (~> 6.4)

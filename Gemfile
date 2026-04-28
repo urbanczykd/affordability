@@ -7,6 +7,7 @@ gem "rails", "~> 7.2.0"
 gem "pg", "~> 1.5"
 gem "puma", "~> 6.4"
 gem "sidekiq", "~> 7.2"
+gem "connection_pool", "< 3.0"
 gem "rack-cors", "~> 2.0"
 gem "dotenv-rails", "~> 3.1"
 

@@ -71,6 +71,21 @@ services:
       - .:/app
     command: bundle exec sidekiq -q default -c 5
 
+  sidekiq_web:
+    build:
+      context: .
+      target: production
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "9292:9292"
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    command: bundle exec rackup sidekiq_web.ru -o 0.0.0.0 -p 9292
+
 volumes:
   postgres_data:
   redis_data:
