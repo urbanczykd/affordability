@@ -16,6 +16,8 @@ A production-ready Rails 7.2 API service that evaluates mortgage applications ag
 # if all tests are green this means that db,app,redis and db
 has to be up also and the application should be accessible under 
 - http://localhost:3000/
+# Sidekiq UI is available under http://localhost:9292/
+
 
 # run tests
 
