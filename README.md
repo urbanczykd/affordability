@@ -5,17 +5,17 @@ A production-ready Rails 7.2 API service that evaluates mortgage applications ag
 ---
 ## Fast and Simple option
 
-git clone https://github.com/urbanczykd/affordability
-cd affordability
-docker compose up --build
-rbenv install 3.2.2 
-rbenv shell 3.2.2
-bundle install
-bundle exec rails db:create:all db:migrate
-bundle exec rspec
-- if all tests are green this means that db,app,redis and db
+- git clone https://github.com/urbanczykd/affordability
+- cd affordability
+- docker compose up --build
+- rbenv install 3.2.2 
+- rbenv shell 3.2.2
+- bundle install
+- bundle exec rails db:create:all db:migrate
+- bundle exec rspec
+# if all tests are green this means that db,app,redis and db
 has to be up also and the application should be accessible under 
-(http://localhost:3000/)
+- http://localhost:3000/
 
 # run tests
 
