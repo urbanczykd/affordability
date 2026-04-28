@@ -20,6 +20,7 @@ has to be up also and the application should be accessible under
 
 
 # run tests
+- bundle exec rspec
 
 ## Setup & Running
 
@@ -272,7 +273,7 @@ Error body:
 
 Affordability calculations are deliberately performed outside the HTTP request cycle. When a client calls `POST .../assessments`, the API creates an `Assessment` record in `pending` state, enqueues an `AffordabilityAssessmentJob`, and returns 202. The client polls the GET endpoint until `status` transitions to `completed` or `failed`.
 
-This separation matters because affordability processing is expected to become more expensive over time — integrating with credit bureaus, running statistical models, or aggregating third-party data. By decoupling computation from the request path from day one, none of those integrations require an API contract change; only the internals of the job and the calculator change. It also naturally handles traffic spikes: requests are accepted immediately and workers drain the queue at their own pace, making the system horizontally scalable at the worker tier independently from the web tier.
+This separation matters because affordability processing is expected to become more expensive over time — integrating with credit brookers, running statistical models, or aggregating third-party data. By decoupling computation from the request path from day one, none of those integrations require an API contract change; only the internals of the job and the calculator change. It also naturally handles traffic spikes: requests are accepted immediately and workers drain the queue at their own pace, making the system horizontally scalable at the worker tier independently from the web tier.
 
 ### 2. Service object pattern (AffordabilityCalculator)
 
