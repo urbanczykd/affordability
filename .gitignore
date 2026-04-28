@@ -25,7 +25,6 @@
 /config/master.key
 /config/credentials.yml.enc
 
-.env
 *.log
 .DS_Store
 /vendor/bundle

@@ -3,6 +3,21 @@
 A production-ready Rails 7.2 API service that evaluates mortgage applications against standard affordability criteria. Applications are processed asynchronously via Sidekiq, and callers poll for results.
 
 ---
+## Fast and Simple option
+
+git clone https://github.com/urbanczykd/affordability
+cd affordability
+docker compose up --build
+rbenv install 3.2.2 
+rbenv shell 3.2.2
+bundle install
+bundle exec rails db:create:all db:migrate
+bundle exec rspec
+- if all tests are green this means that db,app,redis and db
+has to be up also and the application should be accessible under 
+(http://localhost:3000/)
+
+# run tests
 
 ## Setup & Running
 
@@ -21,10 +36,15 @@ git clone https://github.com/urbanczykd/affordability
 cd affordability
 bundle install
 
-# 2. Configure environment
-cp .env.example .env
+# X. Configure environment
+# .env is commited into scm, it shoudn't be but it's easier to 
+# run the application in dev or run tests
+# cp .env.example .env
 # Edit .env and set API_KEY, DATABASE_URL, REDIS_URL
 
+# 2. for rbenv
+rbenv shell 3.2.2
+# if ruby 3.2.2 isn't installed run rbenv install 3.2.2 
 # 3. Create and migrate the database
 bundle exec rails db:create db:migrate
 
@@ -38,7 +58,7 @@ bundle exec sidekiq -q default
 ### Docker Compose (recommended)
 
 ```bash
-cp .env.example .env
+# cp .env.example .env
 # Set a strong API_KEY in .env
 
 docker compose up --build
@@ -112,7 +132,7 @@ curl -s -X POST http://localhost:3000/api/v1/mortgage_applications \
 
 ```json
 {
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "id": "fe4f1f57-4666-4388-b70c-32122f76f0dc",
   "annual_income": "75000.0",
   "monthly_expenses": "1500.0",
   "deposit_amount": "50000.0",
@@ -134,7 +154,7 @@ GET /api/v1/mortgage_applications/:id
 **curl example**
 
 ```bash
-curl -s http://localhost:3000/api/v1/mortgage_applications/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+curl -s http://localhost:3000/api/v1/mortgage_applications/693f3f3d-12a2-405c-ab4f-95c0fa5b3d96 \
   -H "Authorization: Bearer dev-secret-key-change-in-production" | jq .
 ```
 
@@ -154,7 +174,7 @@ Enqueues an async Sidekiq job and immediately returns the new assessment in `pen
 
 ```bash
 curl -s -X POST \
-  http://localhost:3000/api/v1/mortgage_applications/a1b2c3d4-e5f6-7890-abcd-ef1234567890/assessments \
+  http://localhost:3000/api/v1/mortgage_applications/693f3f3d-12a2-405c-ab4f-95c0fa5b3d96/assessments \
   -H "Authorization: Bearer dev-secret-key-change-in-production" | jq .
 ```
 
@@ -163,7 +183,7 @@ curl -s -X POST \
 ```json
 {
   "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-  "mortgage_application_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "mortgage_application_id": "fe4f1f57-4666-4388-b70c-32122f76f0dc",
   "status": "pending",
   "decision": null,
   "loan_amount": null,
@@ -191,7 +211,7 @@ Poll until `status` is `"completed"` or `"failed"`. A reasonable polling interva
 
 ```bash
 curl -s \
-  http://localhost:3000/api/v1/mortgage_applications/a1b2c3d4-e5f6-7890-abcd-ef1234567890/assessments/b2c3d4e5-f6a7-8901-bcde-f12345678901 \
+  http://localhost:3000/api/v1/mortgage_applications/693f3f3d-12a2-405c-ab4f-95c0fa5b3d96/assessments/b2c3d4e5-f6a7-8901-bcde-f12345678901 \
   -H "Authorization: Bearer dev-secret-key-change-in-production" | jq .
 ```
 
@@ -200,7 +220,7 @@ curl -s \
 ```json
 {
   "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-  "mortgage_application_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "mortgage_application_id": "fe4f1f57-4666-4388-b70c-32122f76f0dc",
   "status": "completed",
   "decision": "approved",
   "loan_amount": "300000.0",
