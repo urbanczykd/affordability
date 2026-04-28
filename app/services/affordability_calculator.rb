@@ -79,8 +79,8 @@ class AffordabilityCalculator
   def evaluate(loan_amount, ltv, dti_ratio, max_borrowing)
     reasons = []
 
-    reasons << "Loan-to-value ratio of #{ltv.round(1)}% exceeds the maximum allowed #{MAX_LTV}%." if ltv > MAX_LTV
-    reasons << "Debt-to-income ratio of #{dti_ratio.round(1)}% exceeds the maximum allowed #{MAX_DTI}%." if dti_ratio > MAX_DTI
+    reasons << "Loan-to-value ratio of #{ltv.round(1)}% exceeds the maximum allowed #{MAX_LTV.to_i}%." if ltv > MAX_LTV
+    reasons << "Debt-to-income ratio of #{dti_ratio.round(1)}% exceeds the maximum allowed #{MAX_DTI.to_i}%." if dti_ratio > MAX_DTI
     reasons << "Requested loan amount of #{format_currency(loan_amount)} exceeds maximum borrowing of #{format_currency(max_borrowing)}." if loan_amount > max_borrowing
     reasons << "Loan amount must be greater than zero." if loan_amount <= 0
 
